@@ -226,7 +226,7 @@ module "container_definitions" {
   sqs_queues = var.sqs_queues
 
   # Secrets
-  shared_secrets_arn = aws_secretsmanager_secret.shared_secrets.arn
+  shared_secrets_arn = local.shared_secrets_arn
   sensitive_env_vars = var.sensitive_env_vars
 
   # AWS configuration

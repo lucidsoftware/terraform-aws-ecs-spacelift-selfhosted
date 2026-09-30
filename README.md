@@ -299,7 +299,7 @@ This module supports two types of MQTT brokers:
 1. **Built-in MQTT broker (mqtt_broker_type = "builtin")**
    - When using the built-in broker, the Spacelift server acts as the MQTT broker, but listens on a different port.
      - A separate Network Load Balancer (NLB) is created for the MQTT broker port.
-     - The NLB doesn't require an ACM certificate. TLS is handled inside the Spacelift MQTT broker.  
+     - The NLB doesn't require an ACM certificate. TLS is handled inside the Spacelift MQTT broker.
    - Requires DNS configuration (`CNAME`) for the MQTT broker endpoint.
    - Set in your configuration with: `mqtt_broker_type = "builtin"` (this is the default), and `mqtt_broker_endpoint = "tls://<endpoint address>"`.
 
@@ -378,6 +378,29 @@ With a database you manage yourself, build the same thing by hand: the usual con
 > ```
 >
 > The last grant makes the IAM user a member of the `spacelift` role that owns the database, so it can alter the schema and not just read and write rows. Don't grant `rds_iam` to the master user itself - it loses password authentication, and with it your break-glass access.
+
+### License Token and Secrets
+
+If you wish to avoid passing in the license token and/or datadog API key, you can instead use an existing Secrets Manager secret that
+contains that information.
+
+This secret should use the key/value pairs with the following keys:
+
+| Key | Required | Description  |
+|---|---|---|
+| **`LICENSE_TOKEN`**      | Yes | The license token to use |
+| **`DD_API_KEY`**         | No  | Datadog API key to use, if the datadog sidecar is used |
+| **`AOT_CONFIG_CONTENT`** | No  | Custom OTel configuration content. Takes precedence over `var.otel_config.config_file` and `var.otel_config.config_content`. |
+
+The arn of the secret should be passed as:
+
+```hcl
+shared_secrets = {
+  arn = aws_secrets_manager_secret.shared.arn
+}
+```
+
+Note that if this is used, then `var.license_token`, `var.datadog_api_key`, and `var.otel_config.config_content` will be effectively ignored.
 
 ## 🚀 Release
 

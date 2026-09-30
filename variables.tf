@@ -123,6 +123,25 @@ variable "license_token" {
   # We don't mark it as 'ephemeral' because we use the sha256 value to calculate it for triggering secret updates.
 }
 
+variable "shared_secrets" {
+  # We use an object instead just a string, so that if the arn isn't known yet it won't
+  # cause errors when we have a count tha checks if it is null.
+  #
+  # In OpenTofu 1.13, the caller could use `assumenotnull`, but that isn't released yet.
+  type        = object({ arn = string })
+  description = <<-EOT
+    If non-null, the arn for a Secrets Manager secret that contains shared secrets used by the services.
+
+    This MUST contain a LICENSE_TOKEN value containing the license token. It MAY contain a DD_API_KEY value containing the datadog api key
+    and/or AOT_CONFIG_CONTENT value cntaining the OpenTelemetry configuration.
+
+    If supplied, then var.license_token, var.datadog_api_key, and var.otel_config.config_content will be ignored.
+
+    The arn can also be referenced in var.sensitive_env_vars without also needing to add it to var.secrets_manager_secret_arns.
+  EOT
+  default     = null
+}
+
 variable "deliveries_bucket_name" {
   type        = string
   description = "The name of the deliveries bucket."

@@ -1,4 +1,6 @@
 resource "aws_secretsmanager_secret" "shared_secrets" {
+  count = var.shared_secrets != null ? 1 : 0
+
   name                    = "spacelift/shared-secrets-${var.suffix}"
   description             = "Secrets that are used by the Spacelift ECS services"
   recovery_window_in_days = 0
@@ -16,8 +18,14 @@ locals {
 }
 
 resource "aws_secretsmanager_secret_version" "shared_secrets" {
+  count = var.shared_secrets != null ? 1 : 0
+
   secret_id        = aws_secretsmanager_secret.shared_secrets.id
   secret_string_wo = local.payload
 
   secret_string_wo_version = local.version_num
+}
+
+locals {
+  shared_secrets_arn = var.shared_secrets != null ? var.shared_secrets.arn : aws_secretsmanager_secret.shared_secrets.arn
 }
