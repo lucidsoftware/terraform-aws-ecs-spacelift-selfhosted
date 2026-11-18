@@ -92,6 +92,8 @@ module "ecs" {
   registry_credentials            = var.registry_credentials
   byo_registry_credentials_secret = var.byo_registry_credentials_secret
 
+  shared_secrets = var.shared_secrets
+
   server_port                  = local.server_port
   mqtt_broker_port             = local.mqtt_port
   mqtt_broker_type             = local.mqtt_broker_type
